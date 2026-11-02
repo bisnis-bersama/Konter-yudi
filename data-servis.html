@@ -64,7 +64,7 @@ body.dark{background:#0b0f14!important;color:#e5e7eb!important}body.dark .card{b
 </div><div id="reader" style="max-height:260px;min-height:0"></div><div id="scanResult" role="status" style="margin-top:10px;font-size:12px;color:#047857;font-weight:900;overflow-wrap:anywhere"></div>
 <div style="display:flex;gap:7px;justify-content:flex-end;margin-top:12px"><button class="btn secondary" onclick="tutupScan()">Tutup</button></div></div></div>
 <div class="popup" id="editPopup"><div class="popup-box"><h3 id="editTitle">Edit Status Servis</h3><div id="editBody" style="font-size:12px;line-height:1.6"></div><div style="margin:8px 0"><label>UBAH STATUS</label><select id="newStatus"><option value="masuk">Masuk</option><option value="nunggu_sparepart">Nunggu Sparepart</option><option value="proses">Proses</option><option value="selesai">Selesai</option><option value="diambil">Diambil</option><option value="batal">Batal</option></select></div><div style="display:flex;gap:7px;justify-content:flex-end;margin-top:12px"><button class="btn secondary" onclick="closeEdit()">Batal</button><button class="btn" style="background:#111827;color:#fff" onclick="simpanStatus()">💾 Simpan & Kirim WA</button></div></div></div>
-<div class="popup" id="waPopup"><div class="popup-box"><h3>📲 Konfirmasi WA Pelanggan</h3><div id="waInfo" style="font-size:12px;line-height:1.5"></div><div class="wa-box" id="waText"></div><div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:12px"><button id="waLinkBtn" type="button" style="flex:1;text-align:center;padding:11px;background:#25D366;color:#fff;border-radius:10px;text-decoration:none;font-weight:900;border:2px solid #111827;cursor:pointer">📲 Buka WhatsApp</button><button class="mini" onclick="salinWA()">📋 Salin</button><button class="mini" onclick="tutupWA()">Tutup</button></div></div></div>
+<div class="popup" id="waPopup"><div class="popup-box"><h3>📲 Konfirmasi WA Pelanggan</h3><div id="waInfo" style="font-size:12px;line-height:1.5"></div><div class="wa-box" id="waText"></div><div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:12px"><button id="waApiBtn" type="button" style="flex:1;text-align:center;padding:11px;background:#16a34a;color:#fff;border-radius:10px;text-decoration:none;font-weight:900;border:2px solid #111827;cursor:pointer">📲 Kirim via API</button><button id="waLinkBtn" type="button" style="flex:1;text-align:center;padding:11px;background:#25D366;color:#fff;border-radius:10px;text-decoration:none;font-weight:900;border:2px solid #111827;cursor:pointer">Buka WhatsApp</button><button class="mini" onclick="salinWA()">📋 Salin</button><button class="mini" onclick="tutupWA()">Tutup</button></div></div></div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
@@ -73,6 +73,15 @@ import { getFirestore,doc,getDoc,collection,query,where,getDocsFromServer,update
 const cfg={apiKey:"AIzaSyC_PcarMTT5Un7qfSLzf92o5OGn5rginsI",authDomain:"fixzy-update.firebaseapp.com",projectId:"fixzy-update",storageBucket:"fixzy-update.firebasestorage.app",messagingSenderId:"995892519622",appId:"1:995892519622:web:fa41047944d8e5b35d6dc7"};
 const app=initializeApp(cfg),auth=getAuth(app),db=getFirestore(app);
 let uid="",ownerUid="",profile={},role="",isOwner=false,isSuperAdmin=false,allRows=[],editId=null,pendingWA=null,html5Qr=null,importRows=[],importHeaders=[],importWorkbook=null;
+const WA_API_URL="https://api-wa-konter-production.up.railway.app/kirim-wa";
+async function kirimWAApi(nomor,pesan){
+ const no=nomorWA(nomor);
+ if(!no)throw new Error("Nomor WhatsApp pelanggan belum tersedia.");
+ const response=await fetch(WA_API_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({nomor:no,pesan:String(pesan||"")})});
+ let result={};try{result=await response.json()}catch(e){}
+ if(!response.ok)throw new Error(result.message||result.error||`Server WhatsApp merespons HTTP ${response.status}`);
+ return result;
+}
 
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -296,7 +305,18 @@ Apabila terdapat keluhan, kendala, atau hasil perbaikan yang dirasa kurang sesua
 Terima kasih atas kepercayaan nya
 Kami tunggu servis berikutnya 🙏\n*${namaKonter}*`;return`Halo Kak ${nama},\n\nStatus servisan Nota ${nota} di ${namaKonter} diupdate menjadi: *${newStatus.toUpperCase()}*.\n\nHP: ${tipe}\nProduk: ${produk}\n\nTerima kasih.\n*${namaKonter}*`}
 function bukaWhatsApp(nomor,pesan){if(!nomor)return;const u="https://wa.me/"+nomor+"?text="+encodeURIComponent(pesan||"");try{const w=window.open(u,"_blank");if(!w)window.location.href=u}catch(e){window.location.href=u}}
-function siapkanTombolWA(nomor,pesan){pendingWA={phone:nomor,message:pesan};$("waLinkBtn").onclick=()=>bukaWhatsApp(nomor,pesan)}
+function siapkanTombolWA(nomor,pesan){
+ pendingWA={phone:nomor,message:pesan};
+ $("waLinkBtn").onclick=()=>bukaWhatsApp(nomor,pesan);
+ $("waApiBtn").onclick=async()=>{
+  if(!pendingWA)return;
+  const btn=$("waApiBtn");if(!confirm("Kirim pesan ini melalui WhatsApp API?"))return;
+  btn.disabled=true;btn.textContent="⏳ Mengirim...";
+  try{await kirimWAApi(pendingWA.phone,pendingWA.message);alert("Permintaan pengiriman WhatsApp berhasil diterima server.");}
+  catch(e){console.error(e);alert("Gagal mengirim melalui API: "+(e.message||e)+"\\nSilakan gunakan tombol Buka WhatsApp sebagai alternatif.");}
+  finally{btn.disabled=false;btn.textContent="📲 Kirim via API";}
+ };
+}
 window.bukaEdit=id=>{ $("newStatus").parentElement.style.display="block"; $("newStatus").parentElement.nextElementSibling.innerHTML='<button class="btn secondary" onclick="closeEdit()">Batal</button><button class="btn" style="background:#111827;color:#fff" onclick="simpanStatus()">💾 Simpan & Kirim WA</button>'; const r=allRows.find(x=>x.id===id);if(!r)return;editId=id;$("editTitle").textContent="Edit Status - "+getNota(r);$("editBody").innerHTML=`<b>Nota:</b> ${esc(getNota(r))} <span class="barcode">${esc(getNota(r))}</span><br><b>Pelanggan:</b> ${esc(getNama(r))} - ${esc(getWa(r))}<br><b>HP:</b> ${esc(getTipe(r))} - ${esc(getKerusakan(r))}<br><b>Produk:</b> ${getProdukChips(r)}<br><b>Total:</b> ${money(getTotal(r))} | Diskon: ${money(getDiskon(r))} | DP: ${money(getDP(r))}<br><b>Status sekarang:</b> <span class="badge status-${getStatus(r)}">${esc(getStatus(r))}</span><br>`;$("newStatus").value=getStatus(r);$("editPopup").classList.add("show")}
 window.closeEdit=()=>{$("editPopup").classList.remove("show");editId=null}
 window.simpanStatus=async()=>{
@@ -395,7 +415,7 @@ window.simpanStatus=async()=>{
  }
 }
 window.kirimWALangsung=id=>{const r=allRows.find(x=>x.id===id);if(!r)return;const waNomor=nomorWA(getWa(r));if(!waNomor){alert("No WA kosong");return}const pesan=buildPesanWA(r,getStatus(r));siapkanTombolWA(waNomor,pesan);$("waInfo").innerHTML=`Kirim WA manual - Nota <b>${esc(getNota(r))}</b> Status <b>${esc(getStatus(r))}</b>`;$("waText").textContent=pesan;$("waPopup").classList.add("show")}
-window.tutupWA=()=>{$("waPopup").classList.remove("show");pendingWA=null;$("waLinkBtn").onclick=null}
+window.tutupWA=()=>{$("waPopup").classList.remove("show");pendingWA=null;$("waLinkBtn").onclick=null;$("waApiBtn").onclick=null}
 window.salinWA=async()=>{if(!pendingWA)return;try{await navigator.clipboard.writeText(pendingWA.message);alert("Pesan disalin ✅")}catch{const range=document.createRange();range.selectNode($("waText"));window.getSelection().removeAllRanges();window.getSelection().addRange(range);document.execCommand("copy");alert("Pesan disalin ✅")}}
 window.editDataServis=editDataServis;window.hapusServis=hapusServis;
 function normalisasiHasilScan(raw){
