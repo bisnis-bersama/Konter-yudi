@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#0b0f14">
+<title>FIXZY | Tagihan Pelanggan</title>
+<style>
+:root{--black:#0b0f14;--black2:#111827;--yellow:#ffc107;--line:#dbe2ea;--muted:#64748b}
+*{box-sizing:border-box}
+body{margin:0;background:#eef2f6;color:#111827;font-family:Arial,sans-serif;transition:background .2s,color .2s}
+header{position:fixed;top:0;left:0;right:0;width:100%;z-index:9999;background:#0b0f14;color:#fff;border-bottom:3px solid #ffc107;height:74px;display:flex;align-items:center;padding:0}
+header .in{width:100%;max-width:1200px;margin:auto;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:0 12px;min-height:52px}
+header .brand{display:flex;align-items:center;gap:12px;min-width:0;flex:1}
+header .logo{width:52px;height:52px;object-fit:contain;border-radius:14px;background:#000;border:1px solid #ffffff20;padding:4px;flex:0 0 52px}
+header .brand-text{min-width:0;overflow:hidden}
+header h1{font-size:18px;margin:0 0 3px;line-height:1.2}
+header small{display:block;color:#cbd5e1;line-height:1.3;overflow-wrap:anywhere;font-size:11px}
+header .head-actions{display:flex;align-items:center;gap:7px;flex:0 0 auto}
+header .head-actions .btn{white-space:nowrap;padding:10px 12px;font-size:12px}
+.wrap{max-width:1200px;margin:0 auto;padding:88px 12px 24px}
+.card{background:#fff;border:2px solid var(--black2);border-radius:20px;padding:16px;margin-bottom:16px;box-shadow:5px 5px 0 var(--black2)}
+.grid{display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:10px}
+label{display:block;font-size:12px;font-weight:900;color:#475569;margin:0 0 6px}
+input,textarea,select{width:100%;min-height:44px;border:2px solid var(--black2);border-radius:11px;padding:10px;font:inherit;background:#fff;color:#111827}
+textarea{min-height:105px;resize:vertical}
+.btn{border:0;border-radius:11px;padding:12px 14px;font-weight:900;cursor:pointer;font-size:14px;line-height:1.2}
+.btn:disabled{opacity:.55;cursor:wait}
+.yellow{background:var(--yellow);color:#111827}.dark{background:var(--black2);color:white}.green{background:#16a34a;color:white}.blue{background:#dbeafe;color:#1d4ed8}.red{background:#dc2626;color:white}
+.summary{background:var(--black2);color:white;border-radius:15px;padding:16px;line-height:1.75;margin-bottom:15px;font-size:16px}
+.summary b{color:var(--yellow)}
+.person{border:2px solid var(--black2);border-radius:17px;padding:14px;margin-top:12px;box-shadow:4px 4px 0 var(--black2)}
+.personhead{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.person h3{margin:0 0 4px;font-size:19px}
+.muted{color:var(--muted);font-size:13px;line-height:1.5}
+.sale-row{border:1px solid var(--line);border-radius:13px;padding:12px;margin:12px 0;background:#fff}
+.sale-top{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:flex-start;margin-bottom:9px}
+.sale-nota{font-weight:900;overflow-wrap:anywhere}.sale-date{color:var(--muted);font-size:12px;margin-top:4px}
+.detail-label{font-size:12px;font-weight:900;color:#475569;margin:10px 0 5px}
+.product-lines{border-radius:9px;background:#f8fafc;padding:7px 10px;overflow-wrap:anywhere}
+.product-line{padding:6px 0;border-bottom:1px dashed #cbd5e1;line-height:1.45;overflow-wrap:anywhere}
+.product-line:last-child{border-bottom:0}
+.money-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:10px}
+.money-cell{background:#f8fafc;border-radius:9px;padding:9px;min-width:0}
+.money-cell span{display:block;font-size:12px;color:#64748b;margin-bottom:4px}
+.money-cell b{display:block;overflow-wrap:anywhere}
+.sale-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.sale-actions .btn{flex:1;min-width:105px}
+.total{font-size:18px;font-weight:900;color:#b45309;margin:14px 0 4px}
+.err{color:#b91c1c;font-weight:800;white-space:pre-wrap}
+.empty{padding:18px;text-align:center;color:#64748b}
+.modal{display:none;position:fixed;inset:0;z-index:20;background:#0009;padding:16px;overflow:auto;align-items:center;justify-content:center}
+.modal.show{display:flex}
+.modal-box{width:min(640px,100%);background:#fff;border:2px solid var(--black2);border-radius:18px;padding:17px;box-shadow:6px 6px 0 var(--yellow);max-height:92vh;overflow:auto}
+.modal-box h2{margin:0 0 14px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.form-grid .full{grid-column:1/-1}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:14px;flex-wrap:wrap}
+.replace-box{border:1px solid #dbe2ea;border-radius:12px;padding:12px;background:#f8fafc}
+.replace-tools{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+.replace-target{margin-top:9px}
+.replacement-results{display:grid;gap:7px;margin-top:8px;max-height:220px;overflow:auto}
+.replacement-item{background:#fff;border:1px solid #dbe2ea;border-radius:10px;padding:10px;text-align:left;color:#111827;cursor:pointer}
+.replacement-item b{display:block}.replacement-item small{display:block;color:#64748b;margin-top:4px}
+@media(max-width:650px){
+ header{height:68px}header .in{padding:0 9px}header .brand{gap:8px}header .logo{width:43px;height:43px;flex:0 0 43px}
+ header h1{font-size:13px;white-space:nowrap}header small{font-size:10px;white-space:nowrap;text-overflow:ellipsis}
+ header .head-actions{gap:5px}header .head-actions .btn{padding:9px 7px;font-size:10px;border-radius:8px}
+ .grid{grid-template-columns:1fr}.form-grid{grid-template-columns:1fr}.form-grid .full{grid-column:auto}
+ .personhead .btn{width:100%}header h1{font-size:16px}header .logo{width:52px;height:52px}
+ header .in{gap:7px;align-items:center}.wrap{padding:88px 10px 12px}.card{padding:13px;border-radius:17px}
+ .money-grid{gap:5px}.money-cell{padding:8px 6px}.money-cell b{font-size:12px}
+ .sale-actions .btn{min-width:0;font-size:12px;padding:11px 8px}.summary{font-size:15px}.person{padding:11px}
+}
+
+/* FIXZY responsive layout inspired by Data Servis */
+:root{--yellow:#ffc107;--black2:#111827}
+.card{border:2px solid #111827;border-radius:20px;box-shadow:5px 5px 0 #111827;padding:18px}
+.summary{border-radius:20px;background:#111827;padding:18px 20px;box-shadow:4px 4px 0 #ffc107;margin:12px 0 18px;line-height:1.8}
+.search-card h2{font-size:22px;border-bottom:3px solid #111827;padding-bottom:12px}
+.search-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:14px}
+.search-actions .btn{min-height:46px}
+.person{border:2px solid #111827;border-radius:20px;box-shadow:4px 4px 0 #111827;padding:16px;margin:0 0 18px;background:#fff}
+.personhead{padding-bottom:12px;border-bottom:1px solid #dbe2ea}
+.sale-row{border:1px solid #dbe2ea;border-radius:14px;margin:12px 0;padding:14px;background:#fff}
+.sale-nota{font-size:16px;color:#111827}.sale-top{align-items:center}
+.money-cell{border:1px solid #e2e8f0}.sale-actions .btn{min-height:42px}
+@media(min-width:900px){.grid{grid-template-columns:1.5fr 1fr 1fr}.wrap{padding-top:94px}.results-card{overflow-x:auto}.person{padding:18px}.sale-row{padding:16px}}
+@media(max-width:650px){
+ header{height:72px}header .in{padding:0 9px;gap:7px}header .brand{gap:8px}header .logo{width:45px;height:45px;flex:0 0 45px}header h1{font-size:14px;white-space:normal}header small{font-size:10px;white-space:normal;line-height:1.2}header .head-actions .btn{padding:9px 8px;font-size:11px}
+ .wrap{padding:84px 12px 22px}.summary{font-size:15px;padding:17px;border-radius:20px;line-height:1.9}.card{padding:14px;border-radius:20px}.search-card h2{font-size:20px}
+ .grid{grid-template-columns:1fr;gap:12px}.grid input{min-height:48px;font-size:16px}.search-actions{grid-template-columns:1fr 1fr;gap:9px}.search-actions .btn{min-height:49px;font-size:13px;padding:12px 8px}.search-actions #backupBtn{grid-column:1/-1}
+ .person{padding:13px;border-radius:20px;margin-bottom:17px}.person h3{font-size:20px}.personhead{align-items:stretch;flex-direction:column}.personhead .btn{width:100%;min-height:46px}.sale-row{padding:12px;border-radius:15px;margin:12px 0}.sale-nota{font-size:15px;overflow-wrap:anywhere}.sale-top{align-items:flex-start}.detail-label{font-size:13px}.product-lines{padding:9px}.product-line{font-size:14px}.money-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.money-cell{padding:9px 6px}.money-cell span{font-size:11px}.money-cell b{font-size:12px;line-height:1.4}.sale-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}.sale-actions .btn{min-width:0;font-size:12px;padding:11px 6px;min-height:44px}.sale-actions .btn:last-child{grid-column:auto}.total{font-size:16px;line-height:1.5}
+}
+
+body.dark-mode{background:#0b0f14;color:#e5e7eb}
+body.dark-mode .card,body.dark-mode .person{background:#111827;color:#e5e7eb;border-color:#ffc107;box-shadow:4px 4px 0 #ffc107}
+body.dark-mode input,body.dark-mode textarea,body.dark-mode select{background:#0b0f14;color:#f8fafc;border-color:#64748b}
+body.dark-mode .sale-row{background:#111827;border-color:#475569}
+body.dark-mode .product-lines,body.dark-mode .money-cell,body.dark-mode .replace-box{background:#0b0f14;color:#e5e7eb;border-color:#475569}
+body.dark-mode .replacement-item{background:#111827;color:#f8fafc;border-color:#475569}
+body.dark-mode .detail-label,body.dark-mode label{color:#cbd5e1}
+body.dark-mode .muted,body.dark-mode .sale-date,body.dark-mode .money-cell span{color:#aab7c8}
+body.dark-mode .modal-box{background:#111827;color:#f8fafc;border-color:#ffc107}
+body.dark-mode .summary{background:#000;border:1px solid #ffc107;box-shadow:4px 4px 0 #ffc107}
+body.dark-mode .search-card h2{border-color:#ffc107}
+body.dark-mode .personhead{border-color:#475569}
+body.dark-mode .sale-nota{color:#f8fafc}
+body.dark-mode .money-cell{border-color:#475569}
+</style>
+</head>
+<body>
+<header><div class="in"><div class="brand"><img class="logo" src="logo.png" alt="Logo FIXZY" onerror="this.onerror=null;this.style.background='#000';this.alt='FIXZY'"><div class="brand-text"><h1>FIXZY — TAGIHAN PELANGGAN</h1><small id="accountLine">Memuat nama owner...</small></div></div><div class="head-actions"><button class="btn yellow" id="headerRefreshBtn" type="button">↻ Refresh</button><button class="btn dark" id="darkModeBtn" type="button">🌙</button></div></div></header>
+<main class="wrap">
+<div id="summary" class="summary">Memuat ringkasan...</div><section class="card search-card"><h2 style="margin:0 0 14px">Pencarian Tagihan</h2><div class="grid"><div><label>NAMA / NOMOR WHATSAPP</label><input id="search" placeholder="Cari nama atau nomor WA"></div><div><label>TANGGAL DARI</label><input id="from" type="date"></div><div><label>TANGGAL SAMPAI</label><input id="to" type="date"></div></div><div class="search-actions"><button class="btn yellow" id="filterBtn">🔎 Tampilkan Tagihan</button><button class="btn dark" id="reloadBtn">↻ Muat Ulang</button><button class="btn green" id="backupBtn" type="button">📊 Backup ke Excel</button></div><p id="msg" class="muted">Tagihan diambil dari transaksi penjualan berstatus Tagihan dan sisa pembayaran lebih dari Rp0.</p></section>
+<section class="card results-card"><div id="results"><div class="empty">Memuat data...</div></div></section></main>
+<div class="modal" id="editModal" role="dialog" aria-modal="true" aria-labelledby="editTitle"><div class="modal-box"><h2 id="editTitle">✏️ Edit Transaksi</h2><div class="form-grid">
+<div><label>TANGGAL TRANSAKSI</label><input id="edTanggal" type="date"></div><div><label>NOMOR NOTA</label><input id="edNota"></div>
+<div><label>NAMA PELANGGAN</label><input id="edNama"></div><div><label>NOMOR WHATSAPP</label><input id="edWa" inputmode="tel"></div>
+<div class="full"><label>DETAIL PRODUK (SATU PRODUK PER BARIS)</label><textarea id="edProduk" placeholder="Masukkan satu nama produk per baris"></textarea></div>
+<div class="full replace-box"><label>GANTI / TAMBAH PRODUK DARI SPREADSHEET</label><div class="replace-tools"><button type="button" class="btn dark" id="loadReplacementProducts">↻ Muat Produk</button><span id="replacementInfo" class="muted">Muat produk untuk mencari pengganti.</span></div><input id="replacementSearch" placeholder="Cari nama, kode, atau supplier (minimal 2 huruf)" autocomplete="off"><div class="replace-target"><label>Ganti baris produk nomor</label><select id="replacementLine"><option value="0">Produk 1</option></select></div><div id="replacementResults" class="replacement-results"></div></div>
+<div><label>TOTAL (RP)</label><input id="edTotal" type="number" min="0"></div><div><label>DISKON (RP)</label><input id="edDiskon" type="number" min="0"></div><div><label>DP / DIBAYAR (RP)</label><input id="edDp" type="number" min="0"></div><div><label>STATUS</label><select id="edStatus"><option value="tagihan">Tagihan</option><option value="lunas">Lunas</option><option value="batal">Batal</option></select></div>
+</div><div class="modal-actions"><button class="btn dark" id="cancelEdit">Batal</button><button class="btn yellow" id="saveEdit">💾 Simpan Perubahan</button></div><p id="editMsg" class="muted"></p></div></div>
+<script type="module">
+import{initializeApp,getApps,getApp}from'https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js';
+import{getAuth,onAuthStateChanged}from'https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js';
+import{getFirestore,collection,query,where,getDocs,getDocsFromServer,doc,getDoc,updateDoc,deleteDoc,serverTimestamp}from'https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js';
+const cfg={apiKey:'AIzaSyC_PcarMTT5Un7qfSLzf92o5OGn5rginsI',authDomain:'fixzy-update.firebaseapp.com',projectId:'fixzy-update',storageBucket:'fixzy-update.firebasestorage.app',messagingSenderId:'995892519622',appId:'1:995892519622:web:fa41047944d8e5b35d6dc7'};
+const app=getApps().length?getApp():initializeApp(cfg),auth=getAuth(app),db=getFirestore(app),$=id=>document.getElementById(id);
+let ownerUid='',uid='',ownerLabel='Owner',all=[],editingId='';
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const money=n=>'Rp '+(Number(n)||0).toLocaleString('id-ID');
+const name=d=>d.pelanggan?.nama||d.namaPelanggan||d.nama||'Pelanggan';
+const phone=d=>d.noHp||d.noWhatsapp||d.whatsapp||d.pelanggan?.wa||d.hp||d.nomorWa||d.wa||'';
+const date=d=>{let v=d.tanggal??d.tanggalPenjualan??d.createdAt??'';if(v&&typeof v==='object'&&v.toDate)v=v.toDate().toISOString();return String(v).slice(0,10)};
+const total=d=>Number(d.total??d.totalBayar??0)||0,diskon=d=>Number(d.diskon??d.potongan??0)||0,dp=d=>Number(d.dp??d.uangMuka??0)||0;
+const status=d=>{const s=String(d.status||'tagihan').toLowerCase();return s==='tunai'?'lunas':s};
+const sisa=d=>['batal','lunas'].includes(status(d))?0:Math.max(0,Number(d.sisa??(total(d)-diskon(d)-dp(d)))||0);
+function productList(d){let p=d.items??d.produkList??d.namaProduk??d.produk??d.barang??d.detailProduk;if(Array.isArray(p))return p.map(x=>{if(typeof x==='string')return x;const n=x?.nama||x?.namaProduk||x?.produk||x?.namaBarang||x?.name||'Produk';const q=Number(x?.qty??x?.jumlah??x?.quantity??1)||1;return q>1?`${n} × ${q}`:n}).filter(Boolean);if(p&&typeof p==='object')return Object.values(p).map(x=>typeof x==='string'?x:(x?.nama||x?.namaProduk||x?.produk||x?.namaBarang||x?.name||'Produk')).filter(Boolean);let t=String(p||'-').trim();return t.includes('\n')?t.split(/\r?\n/).map(x=>x.trim()).filter(Boolean):t.includes(',')?t.split(',').map(x=>x.trim()).filter(Boolean):[t]}
+function fmtDate(v){if(!v)return'-';let p=String(v).split('-');return p.length===3?`${p[2]}-${p[1]}-${p[0]}`:v}
+function normPhone(v){let n=String(v||'').replace(/\D/g,'');if(n.startsWith('0'))n='62'+n.slice(1);else if(n.startsWith('8'))n='62'+n;return n}
+function filterData(){const q=$('search').value.trim().toLowerCase(),from=$('from').value,to=$('to').value;return all.filter(d=>['tagihan','lunas'].includes(status(d))&&(!from||date(d)>=from)&&(!to||date(d)<=to)&&(!q||[name(d),phone(d),d.nomorNota,d.nota].join(' ').toLowerCase().includes(q)))}
+function waMessage(person,rows,from,to){const customer=String(person.nama||'').trim().replace(/^kak\s+/i,'');const konter=rows.find(d=>d.namaKonter||d.konter)?.namaKonter||rows.find(d=>d.konter)?.konter||'A Yudi Thea';let lines=[`Halo Kak ${customer}, kami dari ${konter} ingin mengirimkan rekap tagihan penjualan, ya.`,`Periode: ${from?fmtDate(from):'awal data'} s.d. ${to?fmtDate(to):'hari ini'}.`,''];let sum=0;rows.forEach((d,i)=>{let left=sisa(d);sum+=left;lines.push(`${i+1}. Nota: ${d.nomorNota||d.nota||d.id}`,`   Tanggal: ${fmtDate(date(d))}`,'   Detail produk:',...productList(d).map((x,j)=>`      ${j+1}. ${x}`),`   Total: ${money(Math.max(0,total(d)-diskon(d)))}`,`   DP: ${money(dp(d))}`,`   Sisa: ${money(left)}`,'')});lines.push(`TOTAL TAGIHAN: ${money(sum)}`,'','Mohon bantuannya untuk melakukan pelunasan, Kak. Jika sudah membayar, mohon kabari kami agar catatan tagihan segera kami perbarui. Terima kasih banyak, Kak. 🙏');return lines.join('\n')}
+function render(){const rows=filterData(),unpaid=rows.filter(d=>status(d)==='tagihan'&&sisa(d)>0),paid=rows.filter(d=>status(d)==='lunas'),sum=unpaid.reduce((a,d)=>a+sisa(d),0),income=paid.reduce((a,d)=>a+Math.max(0,Number(d.pendapatan??(total(d)-diskon(d)))||0),0),count=new Set(rows.map(d=>normPhone(phone(d))||name(d).toLowerCase())).size;$('summary').innerHTML=`📋 <b>${rows.length} nota ditampilkan</b><br>🟡 <b>${unpaid.length} nota tagihan</b> &nbsp; | &nbsp; 🟢 <b>${paid.length} nota lunas</b><br>👥 <b>${count} pelanggan</b><br>💰 Total sisa tagihan aktif: <b>${money(sum)}</b><br>💵 Pendapatan dari nota lunas: <b>${money(income)}</b>`;const groups=new Map();rows.forEach(d=>{const key=normPhone(phone(d))||name(d).trim().toLowerCase();if(!groups.has(key))groups.set(key,{nama:name(d),wa:phone(d),rows:[]});groups.get(key).rows.push(d)});if(!groups.size){$('results').innerHTML='<div class="empty">Tidak ada transaksi tagihan atau lunas pada periode ini.</div>';return}
+$('results').innerHTML=[...groups.values()].sort((a,b)=>a.nama.localeCompare(b.nama,'id')).map(p=>{const pSum=p.rows.filter(d=>status(d)==='tagihan').reduce((a,d)=>a+sisa(d),0),wa=normPhone(p.wa),url=wa?`https://wa.me/${wa}?text=${encodeURIComponent(waMessage(p,p.rows.filter(d=>status(d)==='tagihan'),$('from').value,$('to').value))}`:'';return `<article class="person"><div class="personhead"><div><h3>${esc(p.nama)}</h3><div class="muted">WhatsApp: ${esc(p.wa||'Belum ada nomor WA')} • ${p.rows.length} nota</div></div>${url&&p.rows.some(d=>status(d)==='tagihan')?`<button class="btn green" onclick="window.open('${url}','_blank','noopener')">📲 Siapkan WA Tagihan</button>`:''}</div>${[...p.rows].sort((a,b)=>date(a).localeCompare(date(b))).map(d=>{const id=esc(d.id),nota=esc(d.nomorNota||d.nota||d.id),products=productList(d),paid=status(d)==='lunas';return `<div class="sale-row"><div class="sale-top"><div><div class="sale-nota">Nota: ${nota}</div><div class="sale-date">Tanggal: ${esc(fmtDate(date(d)))}</div></div><span class="btn ${paid?'green':'yellow'}" style="padding:7px 10px;cursor:default">${paid?'✓ LUNAS':'TAGIHAN'}</span></div><div class="detail-label">Detail Produk</div><div class="product-lines">${products.map((x,j)=>`<div class="product-line"><b>${j+1}.</b> ${esc(x)}</div>`).join('')}</div><div class="money-grid"><div class="money-cell"><span>Total</span><b>${money(Math.max(0,total(d)-diskon(d)))}</b></div><div class="money-cell"><span>DP</span><b>${money(dp(d))}</b></div><div class="money-cell"><span>Sisa</span><b>${money(sisa(d))}</b></div></div><div class="sale-actions"><button class="btn blue" onclick="editTransaction('${id}')">✏️ Edit Transaksi</button>${!paid&&status(d)==='tagihan'?`<button class="btn green" onclick="markLunas('${id}')">✅ Tandai Lunas</button>`:''}<button class="btn red" onclick="deleteTransaction('${id}')">🗑 Hapus</button></div></div>`}).join('')}<div class="total">${pSum>0?'TOTAL SISA TAGIHAN:':'TOTAL SISA TAGIHAN AKTIF:'} ${money(pSum)}</div></article>`}).join('')}
+async function load(){if(!ownerUid)return;$('msg').textContent='Mengambil data penjualan dari Firebase...';$('reloadBtn').disabled=true;try{let snap;try{snap=await getDocsFromServer(query(collection(db,'penjualan'),where('ownerUid','==',ownerUid)))}catch(e){snap=await getDocs(query(collection(db,'penjualan'),where('ownerUid','==',ownerUid)))}all=snap.docs.map(x=>({id:x.id,...x.data()}));$('msg').textContent=`Data penjualan berhasil dimuat: ${all.length} transaksi.`;render()}catch(e){$('results').innerHTML=`<div class="err">Gagal membaca data penjualan: ${esc(e.message||e)}\nPeriksa aturan Firestore dan pastikan data penjualan memiliki field ownerUid yang sesuai.</div>`;$('msg').textContent='Gagal memuat data.';$('summary').textContent='Ringkasan belum tersedia.'}finally{$('reloadBtn').disabled=false}}
+function openEdit(id){const d=all.find(x=>x.id===id);if(!d)return;editingId=id;$('edTanggal').value=date(d);$('edNota').value=d.nomorNota||d.nota||'';$('edNama').value=name(d)==='Pelanggan'?'':name(d);$('edWa').value=phone(d);$('edProduk').value=productList(d).join('\n');refreshReplacementLines();$('replacementSearch').value='';$('replacementResults').innerHTML='';$('replacementInfo').textContent='Tekan Muat Produk, lalu cari nama produk pengganti.';$('edTotal').value=total(d);$('edDiskon').value=diskon(d);$('edDp').value=dp(d);$('edStatus').value=['tagihan','lunas','batal'].includes(status(d))?status(d):'tagihan';$('editMsg').textContent='Edit data transaksi ini, lalu tekan Simpan Perubahan.';$('editModal').classList.add('show')}
+let replacementProducts=[];
+function cleanProductText(s){return String(s??'').trim().toLowerCase().replace(/[\s_\-()./]+/g,'')}
+function parseProductCSV(text){let out=[],row=[],cell='',q=false;text=text.replace(/^\uFEFF/,'');for(let i=0;i<text.length;i++){let c=text[i],n=text[i+1];if(c==='"'){if(q&&n==='"'){cell+='"';i++}else q=!q}else if(c===','&&!q){row.push(cell);cell=''}else if((c==='\n'||c==='\r')&&!q){if(c==='\r'&&n==='\n')i++;row.push(cell);cell='';if(row.some(x=>x.trim()))out.push(row);row=[]}else cell+=c}if(cell!==''||row.length){row.push(cell);if(row.some(x=>x.trim()))out.push(row)}return out}
+function productNum(v){let s=String(v??'').trim().replace(/[^\d,.-]/g,'');if(!s)return 0;let dots=(s.match(/\./g)||[]).length,commas=(s.match(/,/g)||[]).length;if(dots&&commas){if(s.lastIndexOf(',')>s.lastIndexOf('.'))s=s.replace(/\./g,'').replace(',','.');else s=s.replace(/,/g,'')}else if(commas){let a=s.split(',');s=a.length===2&&a[1].length<=2?s.replace(',','.'):s.replace(/,/g,'')}else if(dots){let a=s.split('.');if(!(a.length===2&&a[1].length<=2))s=s.replace(/\./g,'')}return Number(s)||0}
+function normalizeReplacement(rows,source){if(!rows.length)return[];const clean=s=>String(s??'').trim().toLowerCase().replace(/[\s_\-()./]+/g,'');let hs=rows[0].map(clean),out=[];for(let i=1;i<rows.length;i++){let r=rows[i],get=keys=>{for(const k of keys){let ix=hs.indexOf(clean(k));if(ix>=0&&String(r[ix]??'').trim())return r[ix]}return''};let nama=get(['nama barang','nama produk','nama','produk','product','barang'])||r[1]||r[0];if(!String(nama||'').trim())continue;out.push({id:source+'-'+i,nama:String(nama).trim(),kode:get(['kode','sku','kode produk','id']),supplier:get(['supplier','suplier','nama supplier'])||source,modal:productNum(get(['modal','harga modal','harga beli','hpp'])||r[3]),jual:productNum(get(['jual','harga jual','harga penjualan'])||r[4]),stok:productNum(get(['stock','stok','sisa stok','jumlah stok'])||r[6])})}return out}
+function replacementCsvUrl(raw){try{let u=new URL(raw);if(!u.hostname.toLowerCase().includes('docs.google.com')||!u.pathname.includes('/spreadsheets/'))return raw;let gid=u.searchParams.get('gid')||'0',pub=u.pathname.match(/\/spreadsheets\/d\/e\/([^/]+)\/pub(?:html)?/i);if(pub)return `https://docs.google.com/spreadsheets/d/e/${pub[1]}/pub?gid=${encodeURIComponent(gid)}&single=true&output=csv`;let id=u.pathname.match(/\/spreadsheets\/d\/([^/]+)/i);return id?`https://docs.google.com/spreadsheets/d/${id[1]}/export?format=csv&gid=${encodeURIComponent(gid)}`:raw}catch(e){return raw}}
+async function loadReplacementProducts(){const info=$('replacementInfo'),btn=$('loadReplacementProducts');btn.disabled=true;info.textContent='Memuat link spreadsheet...';try{const snap=await getDoc(doc(db,'pengaturan_spreadsheet',uid));if(!snap.exists())throw Error('Pengaturan Spreadsheet tidak ditemukan untuk akun ini.');const cfg=snap.data()||{};let links=Array.isArray(cfg.spreadsheetLinks)?cfg.spreadsheetLinks:[];if(!links.length&&cfg.spreadsheetUrl)links=[cfg.spreadsheetUrl];if(!links.length)throw Error('Link Spreadsheet belum tersimpan.');let found=[],errors=[];for(let i=0;i<links.length;i++){try{const res=await fetch(replacementCsvUrl(links[i]),{cache:'no-store'});if(!res.ok)throw Error('HTTP '+res.status);const txt=await res.text();if(/<html|<!doctype/i.test(txt.slice(0,400)))throw Error('Sheet belum dipublikasikan sebagai CSV');found.push(...normalizeReplacement(parseProductCSV(txt),'Spreadsheet '+(i+1)))}catch(e){errors.push('Sheet '+(i+1)+': '+e.message)}}replacementProducts=found;info.textContent=`${found.length} produk dimuat${errors.length?' • '+errors.join('; '):''}`;renderReplacementResults()}catch(e){info.textContent='Gagal memuat produk: '+(e.message||e)}finally{btn.disabled=false}}
+function refreshReplacementLines(){const lines=$('edProduk').value.split(/\r?\n/).map(x=>x.trim()).filter(Boolean),sel=$('replacementLine'),old=Number(sel.value)||0;sel.innerHTML=lines.map((x,i)=>`<option value="${i}">Produk ${i+1}: ${esc(x.slice(0,55))}</option>`).join('')||'<option value="0">Produk 1</option>';sel.value=String(Math.min(old,Math.max(0,lines.length-1)))}
+function renderReplacementResults(){const q=$('replacementSearch').value.trim().toLowerCase(),box=$('replacementResults');if(q.length<2){box.innerHTML='';return}const list=replacementProducts.filter(p=>(p.nama+' '+p.kode+' '+p.supplier).toLowerCase().includes(q)).slice(0,40);box.innerHTML=list.map(p=>`<button type="button" class="replacement-item" data-product-id="${esc(p.id)}"><b>${esc(p.nama)}</b><small>${esc(p.supplier)} • Tunai ${money(p.modal)} • Tempo ${money(p.jual)} • Stok ${p.stok}</small></button>`).join('')||'<div class="muted">Produk tidak ditemukan.</div>';box.querySelectorAll('[data-product-id]').forEach(b=>b.addEventListener('click',()=>replaceProduct(b.dataset.productId)))}
+function replaceProduct(id){const p=replacementProducts.find(x=>x.id===id);if(!p)return;const lines=$('edProduk').value.split(/\r?\n/).map(x=>x.trim()).filter(Boolean);const ix=Number($('replacementLine').value)||0;const line=`${p.nama}`;if(lines.length){lines[ix]=line}else lines.push(line);$('edProduk').value=lines.join('\n');refreshReplacementLines();$('replacementLine').value=String(Math.min(ix,Math.max(0,lines.length-1)));$('replacementInfo').textContent=`Produk diganti menjadi: ${p.nama}. Sesuaikan Total (Rp) jika harga berubah.`;$('replacementResults').innerHTML=''}
+$('loadReplacementProducts').addEventListener('click',loadReplacementProducts);$('replacementSearch').addEventListener('input',renderReplacementResults);$('edProduk').addEventListener('input',refreshReplacementLines);
+function closeEdit(){$('editModal').classList.remove('show');editingId=''}
+window.editTransaction=openEdit;
+window.deleteTransaction=async id=>{
+ const d=all.find(x=>x.id===id);
+ if(!d)return;
+ const nota=d.nomorNota||d.nota||id;
+ if(!confirm(`Yakin ingin menghapus transaksi ini?\n\nNota: ${nota}\nPelanggan: ${name(d)}\n\nData yang dihapus tidak dapat dipulihkan.`))return;
+ try{
+  $('msg').textContent='Memeriksa transaksi...';
+  const ref=doc(db,'penjualan',id);
+  const snap=await getDoc(ref);
+  if(!snap.exists()){alert('Transaksi sudah tidak ditemukan.');await load();return}
+  const current=snap.data()||{};
+  const pemilik=String(current.ownerUid||current.ownerId||'');
+  if(pemilik!==String(ownerUid))throw Error('Transaksi bukan milik owner yang sedang aktif.');
+  await deleteDoc(ref);
+  $('msg').textContent=`Transaksi ${nota} berhasil dihapus.`;
+  await load();
+ }catch(e){alert('Gagal menghapus transaksi: '+(e.message||e))}
+};
+window.markLunas=async id=>{const d=all.find(x=>x.id===id);if(!d||status(d)!=='tagihan')return;if(!confirm(`Tandai nota ${d.nomorNota||d.nota||id} sebagai LUNAS? Status transaksi akan berubah menjadi Lunas.`))return;try{await updateDoc(doc(db,'penjualan',id),{status:'lunas',sisa:0,pendapatan:Math.max(0,total(d)-diskon(d)),lunasAt:serverTimestamp(),updatedAt:serverTimestamp(),ownerUid:ownerUid,ownerId:ownerUid});$('msg').textContent=`Nota ${d.nomorNota||d.nota||id} berhasil ditandai Lunas.`;await load()}catch(e){alert('Gagal mengubah status menjadi Lunas: '+(e.message||e))}};
+$('saveEdit').addEventListener('click',async()=>{if(!editingId)return;const btn=$('saveEdit');btn.disabled=true;$('editMsg').textContent='Menyimpan perubahan...';try{const ref=doc(db,'penjualan',editingId),snap=await getDoc(ref);if(!snap.exists())throw Error('Transaksi tidak ditemukan di Firebase.');const current=snap.data()||{};if(String(current.ownerUid||current.ownerId||'')!==String(ownerUid))throw Error('Transaksi ini bukan milik owner yang sedang aktif.');const nt=Math.max(0,Number($('edTotal').value)||0),dis=Math.max(0,Number($('edDiskon').value)||0),paid=Math.max(0,Number($('edDp').value)||0),st=$('edStatus').value,wa=$('edWa').value.trim(),customer=$('edNama').value.trim()||'Pelanggan',nota=$('edNota').value.trim()||current.nomorNota||current.nota||editingId;let s=st==='tagihan'?Math.max(0,nt-dis-paid):0;const patch={tanggal:$('edTanggal').value||date(current),nomorNota:nota,nota,namaPelanggan:customer,noHp:wa,noWhatsapp:wa,wa,items:$('edProduk').value.split(/\r?\n/).map(x=>x.trim()).filter(Boolean),total:nt,diskon:dis,dp:paid,sisa:s,status:st,pendapatan:st==='lunas'?Math.max(0,nt-dis):st==='tagihan'?Math.min(paid,Math.max(0,nt-dis)):0,updatedAt:serverTimestamp(),ownerUid,ownerId:ownerUid};if(current.pelanggan&&typeof current.pelanggan==='object')patch.pelanggan={...current.pelanggan,nama:customer,wa};await updateDoc(ref,patch);closeEdit();$('msg').textContent='Perubahan transaksi berhasil disimpan.';await load()}catch(e){$('editMsg').textContent='Gagal menyimpan: '+(e.message||e)}finally{btn.disabled=false}});
+$('cancelEdit').addEventListener('click',closeEdit);$('editModal').addEventListener('click',e=>{if(e.target===$('editModal'))closeEdit()});$('filterBtn').addEventListener('click',render);$('search').addEventListener('input',render);$('from').addEventListener('change',render);$('to').addEventListener('change',render);$('reloadBtn').addEventListener('click',load);
+$('headerRefreshBtn').addEventListener('click',load);
+// Backup Excel berisi seluruh transaksi milik owner yang sudah dimuat dari Firestore,
+// tidak hanya data yang sedang tampil setelah pencarian/filter.
+$('backupBtn').addEventListener('click',async()=>{
+ const btn=$('backupBtn');
+ if(!all.length){alert('Belum ada data transaksi untuk di-backup. Silakan muat ulang data terlebih dahulu.');return}
+ btn.disabled=true;const oldText=btn.textContent;btn.textContent='⏳ Menyiapkan...';
+ try{
+  const XLSX=await import('https://cdn.jsdelivr.net/npm/xlsx@0.18.5/+esm');
+  const data=[...all].sort((a,b)=>date(a).localeCompare(date(b))).map(d=>({
+   'Tanggal':date(d),
+   'Nomor Nota':d.nomorNota||d.nota||d.id,
+   'Nama Pelanggan':name(d),
+   'Nomor WhatsApp':phone(d),
+   'Detail Produk':productList(d).join(' | '),
+   'Total':Math.max(0,total(d)-diskon(d)),
+   'Diskon':diskon(d),
+   'DP / Dibayar':dp(d),
+   'Sisa Tagihan':sisa(d),
+   'Status':status(d).toUpperCase(),
+   'Owner':ownerLabel,
+   'ID Transaksi':d.id
+  }));
+  const unpaid=data.filter(x=>x.Status==='TAGIHAN');
+  const summary=[
+   {'Keterangan':'Nama Owner/Konter','Nilai':ownerLabel},
+   {'Keterangan':'Waktu Backup','Nilai':new Date().toLocaleString('id-ID')},
+   {'Keterangan':'Jumlah Transaksi','Nilai':data.length},
+   {'Keterangan':'Jumlah Nota Tagihan','Nilai':unpaid.length},
+   {'Keterangan':'Total Sisa Tagihan','Nilai':data.reduce((n,x)=>n+(Number(x['Sisa Tagihan'])||0),0)},
+   {'Keterangan':'Pendapatan Nota Lunas','Nilai':data.filter(x=>x.Status==='LUNAS').reduce((n,x)=>n+(Number(x['Total'])||0),0)}
+  ];
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(summary),'RINGKASAN');
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(data),'DATA TAGIHAN');
+  const safe=String(ownerLabel||'Owner').replace(/[^a-z0-9_-]+/gi,'_').replace(/^_+|_+$/g,'')||'Owner';
+  const stamp=new Date().toISOString().slice(0,10);
+  XLSX.writeFile(wb,`Backup_Tagihan_${safe}_${stamp}.xlsx`);
+  $('msg').textContent=`Backup Excel berhasil dibuat: ${data.length} transaksi, termasuk semua status dan tidak terpengaruh filter pencarian.`;
+ }catch(e){console.error(e);alert('Backup Excel gagal dibuat. Periksa koneksi internet lalu coba lagi.\n'+(e.message||e))}
+ finally{btn.disabled=false;btn.textContent=oldText}
+});
+const darkModeBtn=$('darkModeBtn');
+function applyDarkMode(on){document.body.classList.toggle('dark-mode',on);darkModeBtn.textContent=on?'☀️':'🌙';darkModeBtn.setAttribute('aria-pressed',String(on));try{localStorage.setItem('fixzy-tagihan-dark-mode',on?'1':'0')}catch(e){}}
+let savedDark=false;try{savedDark=localStorage.getItem('fixzy-tagihan-dark-mode')==='1'}catch(e){}
+applyDarkMode(savedDark);
+darkModeBtn.addEventListener('click',()=>applyDarkMode(!document.body.classList.contains('dark-mode')));
+onAuthStateChanged(auth,async u=>{if(!u){location.replace('login.html');return}try{uid=u.uid;const us=await getDoc(doc(db,'users',u.uid));if(!us.exists())throw Error('Profil pengguna tidak ditemukan.');const p=us.data()||{},role=String(p.role||'').toLowerCase();ownerUid=(role==='owner'||role==='superadmin'||p.isOwner===true)?u.uid:String(p.ownerUid||'').trim();if(!ownerUid)throw Error('Owner UID tidak ditemukan pada profil akun.');let op=p;if(ownerUid!==uid){const os=await getDoc(doc(db,'users',ownerUid));if(os.exists())op=os.data()||{}}ownerLabel=op.namaOwner||op.ownerName||op.namaKonter||op.namaToko||op.namaUsaha||op.displayName||op.nama||op.name||op.businessName||op.email||'Owner';$('accountLine').textContent=`Owner: ${ownerLabel} • Akun: ${u.email||'pengguna'}`;await load()}catch(e){$('msg').innerHTML=`<span class="err">Gagal memuat akun: ${esc(e.message||e)}</span>`;$('results').innerHTML='';$('summary').textContent='Ringkasan belum tersedia.'}});
+</script></body></html>

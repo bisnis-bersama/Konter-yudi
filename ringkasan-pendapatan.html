@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b1426">
+<title>FIXZY - Pendapatan</title>
+<style>
+*{box-sizing:border-box} :root{--navy:#0b1426;--navy2:#111d33;--yellow:#ffc107;--bg:#f2f5f9;--card:#fff;--line:#dbe3ed;--text:#172033;--muted:#64748b;--green:#16a34a;--red:#dc2626}
+body{margin:0;font-family:Inter,Arial,sans-serif;background:var(--bg);color:var(--text)}button,input,select{font:inherit}
+.header{background:var(--navy);color:#fff;min-height:78px;padding:10px 14px;display:flex;align-items:center;gap:12px;box-shadow:0 4px 16px #0003;position:sticky;top:0;z-index:20}
+.logo{width:52px;height:52px;object-fit:contain;border-radius:10px;flex:none}.brand{min-width:0;flex:1}.brand h1{font-size:19px;margin:0;font-weight:900}.brand p{font-size:11px;color:#cbd5e1;margin:3px 0 0}
+.refresh{height:44px;width:44px;border:0;border-radius:12px;background:var(--yellow);color:#111;font-weight:900;cursor:pointer;font-size:22px}
+.wrap{max-width:1200px;margin:auto;padding:12px}.notice{background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px 13px;margin-bottom:12px;font-size:12px;color:var(--muted)}
+.tabs{display:flex;gap:8px;overflow:auto;margin-bottom:12px}.tab{border:0;border-radius:12px;padding:11px 16px;background:#e2e8f0;color:#334155;font-weight:900;white-space:nowrap;cursor:pointer}.tab.active{background:var(--navy);color:#fff}
+.card{background:var(--card);border:1px solid var(--line);border-radius:17px;padding:14px;margin-bottom:12px;box-shadow:0 4px 16px #0000000a}.title{font-size:17px;font-weight:900;margin:0 0 11px}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}.kpi{padding:13px;border-radius:14px;color:#fff}.kpi small{display:block;font-size:11px;font-weight:800}.kpi b{display:block;font-size:18px;margin-top:7px}.pend{background:linear-gradient(135deg,#0d6efd,#1d4ed8)}.total{background:linear-gradient(135deg,#7c3aed,#4f46e5)}.peng{background:linear-gradient(135deg,#ef4444,#dc2626)}.laba{background:linear-gradient(135deg,#f59e0b,#d97706)}
+.list{display:grid;gap:16px}.item{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:15px;border:1px solid var(--line);border-radius:16px;background:#fff;cursor:pointer;text-align:left;width:100%;color:inherit}.item:hover{background:#f8fafc}.item-left{min-width:0}.item-title{font-weight:900}.item-sub{font-size:11px;color:var(--muted);margin-top:4px;overflow-wrap:anywhere}.month-group{border:0;border-radius:0;padding:0;background:transparent;margin-bottom:0}.month-heading{font-size:19px;font-weight:900;color:#60a5fa;margin:4px 2px 12px}.month-row{background:linear-gradient(135deg,#303030,#242424);color:#fff;border:0;border-radius:22px;padding:18px;margin:0;box-shadow:0 5px 12px #0002}.month-row:last-child{margin-bottom:0}.month-row .item-title{font-size:18px}.month-row .item-sub{color:#cbd5e1}.month-total{font-size:16px;font-weight:800;white-space:nowrap}.month-toggle{display:flex;align-items:center;gap:10px;min-width:0}.month-arrow{font-size:17px;transition:transform .15s}.month-row[aria-expanded="true"] .month-arrow{transform:rotate(90deg)}.day-list{display:none;gap:8px;padding:0 0 8px 18px}.day-list.open{display:grid}.day-row{background:#3a3a3a;color:#fff;border:1px solid #4a4a4a;border-radius:15px;padding:13px 15px;margin-bottom:0}.day-row .item-title,.day-row .month-total{color:#fff}.day-row .item-sub{color:#d1d5db}.day-row:hover{background:#454545}.day-row .item-title{font-size:15px}.day-row .month-total{font-size:14px}
+.badge{display:inline-block;padding:4px 8px;border-radius:999px;background:#dbeafe;color:#1d4ed8;font-size:10px;font-weight:900;margin-left:4px}.badge.green{background:#dcfce7;color:#166534}.badge.red{background:#fee2e2;color:#991b1b}
+.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:13px;max-width:100%}table{width:100%;border-collapse:collapse;min-width:760px}th{background:var(--navy2);color:#fff;text-align:left;padding:10px;font-size:12px;white-space:nowrap}td{padding:10px;border-bottom:1px solid #edf1f5;font-size:12px;vertical-align:top}.num{text-align:right;white-space:nowrap}.empty{text-align:center;color:var(--muted);padding:24px}
+.popup-bg{position:fixed;inset:0;background:#0008;display:none;align-items:center;justify-content:center;padding:18px;z-index:100}.popup-bg.show{display:flex}.popup{width:min(430px,100%);background:#fff;border-radius:20px;padding:20px;box-shadow:0 20px 60px #0005}.popup h2{margin:0 0 9px;font-size:20px}.popup p{margin:0;color:#64748b;line-height:1.55;font-size:14px}.actions{display:flex;justify-content:flex-end;gap:9px;margin-top:18px}.actions button{border:0;border-radius:11px;padding:11px 16px;font-weight:900;cursor:pointer}.ok{background:var(--navy);color:#fff}.detail-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}.count{font-size:11px;color:var(--muted)}
+@media(max-width:900px){.kpis{grid-template-columns:repeat(2,1fr)}}@media(max-width:600px){.header{padding:9px 10px}.logo{width:48px;height:48px}.brand h1{font-size:17px}.brand p{font-size:10px}.wrap{padding:9px}.tab{padding:9px 12px;font-size:12px}.kpi{padding:10px}.kpi b{font-size:15px}.item{padding:10px}}
+/* Paksa kontras dropdown pada mode terang dan gelap; cegah baris terpilih memudar */
+.month-row,.month-row:hover,.month-row:focus,.month-row:active,.month-row[aria-expanded="true"]{background:linear-gradient(135deg,#303030,#242424)!important;color:#fff!important;opacity:1!important;-webkit-text-fill-color:#fff!important}
+.month-row .item-title,.month-row .month-total,.month-row .month-arrow{color:#fff!important;-webkit-text-fill-color:#fff!important;opacity:1!important}
+.day-row,.day-row:hover,.day-row:focus,.day-row:active{background:#3a3a3a!important;color:#fff!important;opacity:1!important;-webkit-text-fill-color:#fff!important}
+.day-row .item-title,.day-row .month-total{color:#fff!important;-webkit-text-fill-color:#fff!important;opacity:1!important}
+.day-row .item-sub{color:#d1d5db!important;-webkit-text-fill-color:#d1d5db!important;opacity:1!important}
+body.dark-mode{background:#0b0b0b;color:#f5f5f5}body.dark-mode .card,body.dark-mode .table-wrap,body.dark-mode .notice{background:#151515;color:#f5f5f5;border-color:#2b2b2b}body.dark-mode .item{background:#151515;color:#f5f5f5;border-color:#333}body.dark-mode .month-row{background:linear-gradient(135deg,#303030,#242424);color:#fff;border:0}body.dark-mode .month-group{background:transparent;border:0}body.dark-mode .day-row{background:#3a3a3a;color:#fff;border-color:#4a4a4a}body.dark-mode .day-row .item-title,body.dark-mode .day-row .month-total{color:#fff}body.dark-mode .day-row .item-sub{color:#d1d5db}body.dark-mode .day-row:hover{background:#454545}body.dark-mode td{border-color:#333}body.dark-mode .item-sub{color:#bbb}
+
+/* FIXZY: teks kuning terang pada panel hitam pekat agar jelas di mode terang/gelap */
+.month-row,.month-row:hover,.month-row:focus,.month-row:active,.month-row[aria-expanded="true"]{
+ background:#050505!important;color:#ffc107!important;border:1px solid #ffc107!important;opacity:1!important;-webkit-text-fill-color:#ffc107!important
+}
+.month-row .item-title,.month-row .month-total,.month-row .month-arrow{
+ color:#ffc107!important;-webkit-text-fill-color:#ffc107!important;opacity:1!important
+}
+.day-row,.day-row:hover,.day-row:focus,.day-row:active{
+ background:#050505!important;color:#ffc107!important;border:1px solid #3b320b!important;opacity:1!important;-webkit-text-fill-color:#ffc107!important
+}
+.day-row .item-title,.day-row .month-total,.day-row .item-sub{
+ color:#ffc107!important;-webkit-text-fill-color:#ffc107!important;opacity:1!important
+}
+</style>
+</head>
+<body>
+<header class="header"><img class="logo" src="logo.png" alt="FIXZY"><div class="brand"><h1>RINGKASAN PENDAPATAN</h1><p>Pendapatan konter • Penjualan + Servis</p></div><button class="refresh" onclick="toggleDarkMode()" title="Mode Dark">🌙</button><button class="refresh" onclick="muatSemua()" title="Refresh">↻</button></header>
+<main class="wrap">
+<div class="notice" id="status">⏳ Menghubungkan ke Firebase...</div>
+<section class="card"><div class="tabs"><button class="tab active" id="tab-harian" onclick="setMode('harian')">📅 Harian</button><button class="tab" id="tab-bulanan" onclick="setMode('bulanan')">📆 Bulanan</button><button class="tab" id="tab-tahunan" onclick="setMode('tahunan')">📈 Tahunan</button></div><div class="list" id="menu"></div></section>
+<section class="card"><div class="detail-head"><h2 class="title">📊 Detail: <span id="detailTitle">-</span></h2><span class="count" id="detailCount"></span></div>
+<div class="kpis"><div class="kpi pend"><small>PENDAPATAN KONTER</small><b id="kpKonter">Rp 0</b></div><div class="kpi total"><small>TOTAL PENDAPATAN</small><b id="kpTotal">Rp 0</b></div><div class="kpi peng"><small>PENGELUARAN</small><b id="kpPeng">Rp 0</b></div><div class="kpi laba"><small>SISA SEMENTARA</small><b id="kpLaba">Rp 0</b></div></div>
+<h3 class="title" style="margin-top:18px">🧾 Rincian Penjualan, Servis & Pengeluaran</h3><div class="notice">Semua transaksi pada periode ini ditampilkan bersama. Penjualan dan servis ditandai sebagai pendapatan sesuai status; pengeluaran ditampilkan sebagai uang keluar dengan kategori, karyawan, keterangan, dan nominal. Sisa sementara = pendapatan yang dihitung − seluruh pengeluaran yang tercatat; belum dikurangi HPP.</div>
+<div class="table-wrap"><table><thead><tr><th>Tanggal</th><th>Jenis</th><th>Karyawan/Teknisi</th><th>Pelanggan / Keterangan</th><th>Produk / Detail</th><th>Status / Kategori</th><th>Nominal</th></tr></thead><tbody id="tbody"></tbody></table></div>
+</section></main>
+<div class="popup-bg" id="popup"><div class="popup"><h2 id="popupTitle">FIXZY</h2><p id="popupText"></p><div class="actions"><button class="ok" onclick="tutupPopup()">OK</button></div></div></div>
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+import{getAuth,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+import{getFirestore,collection,getDocs,query,where,getDoc,doc}from"https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
+const cfg={apiKey:"AIzaSyC_PcarMTT5Un7qfSLzf92o5OGn5rginsI",authDomain:"fixzy-update.firebaseapp.com",projectId:"fixzy-update",storageBucket:"fixzy-update.firebasestorage.app",messagingSenderId:"995892519622",appId:"1:995892519622:web:fa41047944d8e5b35d6dc7"};
+const app=initializeApp(cfg),auth=getAuth(app),db=getFirestore(app),$=id=>document.getElementById(id);
+const num=v=>{if(typeof v==="number")return Number.isFinite(v)?v:0;let s=String(v??"").trim().replace(/\s/g,"").replace(/Rp/gi,"");if(!s)return 0;if(/^\d{1,3}(\.\d{3})+(,\d+)?$/.test(s))s=s.replace(/\./g,"").replace(",",".");else if(/^\d+,\d+$/.test(s))s=s.replace(",",".");const n=Number(s);return Number.isFinite(n)?n:0};
+const rp=v=>"Rp "+num(v).toLocaleString("id-ID");const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const low=v=>String(v??"").trim().toLowerCase();let uid="",ownerUid="",profile={},servis=[],penjualan=[],pengeluaran=[],mode="harian";
+function localDate(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`}
+function dateOf(r){for(const v of [r?.tanggal,r?.tanggalServis,r?.tanggalTransaksi,r?.tanggalNota,r?.tgl,r?.date,r?.disimpanPada,r?.dibuatPada,r?.waktuSimpan,r?.createdAt,r?.created_at,r?.createdAtISO,r?.updatedAt]){if(v==null||v==="")continue;if(v?.toDate){const d=v.toDate();if(!isNaN(d))return localDate(d)}if(typeof v==="object"&&Number.isFinite(v.seconds)){const d=new Date(v.seconds*1000);if(!isNaN(d))return localDate(d)}const s=String(v).trim();let m=s.match(/(\d{4})[-\/.](\d{1,2})[-\/.](\d{1,2})/);if(m)return `${m[1]}-${String(m[2]).padStart(2,"0")}-${String(m[3]).padStart(2,"0")}`;m=s.match(/^(\d{1,2})[\/-](\d{1,2})[\/-](\d{4})/);if(m)return `${m[3]}-${String(m[2]).padStart(2,"0")}-${String(m[1]).padStart(2,"0")}`;const d=new Date(s);if(!isNaN(d))return localDate(d)}return ""}
+function money(r){for(const k of ["pendapatan","pendapatan1","jumlahTotal","grandTotal","totalBayar","totalHarga","total","totalBiaya","biayaServis","biaya","harga"]){const n=num(r?.[k]);if(n>0)return n}return Math.max(0,num(r?.total??r?.grandTotal??0)-num(r?.diskon??r?.discount??0))}
+function expenseOf(r){for(const k of ["nominal","pengeluaran","peng","amount","jumlah"]){const n=num(r?.[k]);if(n>0)return n}return 0}
+function customer(r){const p=r?.pelanggan;return (p&&typeof p==="object"?(p.nama||p.name||p.namaPelanggan):p)||r?.namaPelanggan||r?.customerName||r?.pelangganNama||r?.namaCustomer||r?.nama||"Umum"}
+function worker(r){const t=r?.teknisi;return (t&&typeof t==="object"?(t.nama||t.name):t)||r?.namaTeknisi||r?.teknisiNama||r?.teknisiName||r?.karyawanNama||r?.namaKaryawan||r?.karyawan||r?.kasir||"-"}
+function product(r){
+ const out=[],add=v=>{if(v==null)return;if(typeof v==="string"||typeof v==="number"){const s=String(v).trim();if(s&&s!=="-"&&!out.includes(s))out.push(s);return}if(Array.isArray(v)){v.forEach(add);return}if(typeof v==="object"){add(v.nama);add(v.namaProduk);add(v.productName);add(v.name);add(v.produk);add(v.model);add(v.tipe);add(v.merkTipe);add(v.brandTipe);add(v.deskripsi)}};
+ add(r?.items);add(r?.produk);add(r?.namaProduk);add(r?.namaBarang);add(r?.sparepart);add(r?.detailProduk);add(r?.daftarProduk);add(r?.product);add(r?.products);add(r?.model);add(r?.tipeHp);add(r?.merkTipe);add(r?.hp);
+ return out.length?out.join(", "):(r?.keterangan||"-")
+}
+function status(r){return r?.status||r?.pembayaran||r?.metode||r?.paymentStatus||"—"}
+function active(r,type){const s=low(r?.status),p=low(r?.pembayaran||r?.metode||r?.paymentStatus);if(["batal","dibatalkan","cancel","canceled"].includes(s)||r?.omzetEligible===false)return false;if(type==="Servis")return ["diambil","diambil pelanggan"].includes(s);return !s||["dibayar","tunai","lunas","paid"].includes(s)||["tunai","cash","lunas","dibayar","paid"].includes(p)}
+function allTx(){return [...servis.map(r=>({...r,_jenis:"Servis"})),...penjualan.map(r=>({...r,_jenis:"Penjualan"}))]}
+function keyFor(d){return mode==="harian"?d:mode==="bulanan"?d.slice(0,7):d.slice(0,4)}
+function label(k){if(mode==="harian"){const d=new Date(k+"T00:00:00");return isNaN(d)?k:d.toLocaleDateString("id-ID",{day:"2-digit",month:"long",year:"numeric"})}if(mode==="bulanan"){const d=new Date(k+"-01T00:00:00");return isNaN(d)?k:d.toLocaleDateString("id-ID",{month:"long",year:"numeric"})}return "Tahun "+k}
+function belongs(r,k){const d=dateOf(r);return !!d&&keyFor(d)===k}
+async function getOwned(col){const map=new Map();for(const f of ["ownerUid","ownerId","uid","userId","createdBy","businessUid"]){for(const val of [...new Set([ownerUid,uid].filter(Boolean))]){try{const s=await getDocs(query(collection(db,col),where(f,"==",val)));s.forEach(d=>map.set(d.id,{id:d.id,...d.data()}))}catch(e){}}}return [...map.values()]}
+async function loadProfile(user){try{const s=await getDoc(doc(db,"users",user.uid));profile=s.exists()?s.data():{}}catch(e){profile={}}const role=low(profile.role);ownerUid=(role==="owner"||role==="superadmin"||profile.isOwner===true)?uid:(profile.ownerUid||profile.ownerId||uid)}
+async function muatSemua(){if(!uid){$("status").textContent="⚠️ Sesi login belum aktif.";clearDetail();return}$("status").textContent="⏳ Membaca data Firebase...";try{await loadProfile(auth.currentUser);[servis,penjualan,pengeluaran]=await Promise.all([getOwned("servis"),getOwned("penjualan"),getOwned("pengeluaran")]);$("status").textContent=`✅ Data dimuat • ${penjualan.length} penjualan • ${servis.length} servis • ${pengeluaran.length} pengeluaran`;renderList();chooseDefault()}catch(e){console.error(e);$("status").textContent="❌ Gagal membaca data: "+(e.message||e);clearDetail()}}
+window.muatSemua=muatSemua;
+function keys(){const s=new Set();[...allTx(),...pengeluaran].forEach(r=>{const d=dateOf(r);if(d)s.add(keyFor(d))});return [...s].sort().reverse()}
+function periodStats(k){const tx=allTx().filter(r=>belongs(r,k)),out=pengeluaran.filter(r=>belongs(r,k));const rev=tx.filter(r=>active(r,r._jenis)).reduce((a,r)=>a+money(r),0),exp=out.reduce((a,r)=>a+expenseOf(r),0);return{tx,out,rev,exp}}
+function renderList(){
+ const ks=keys();
+ if(!ks.length){$("menu").innerHTML='<div class="empty">Belum ada data Firebase yang bisa ditampilkan.</div>';return}
+ const fmtMonth=m=>m.slice(5,7)+'-'+m.slice(0,4);
+ const sumPeriod=key=>periodStats(key).rev;
+ const row=(id,title,total,children,kind)=>`<section class="month-group"><button class="item month-row" type="button" aria-expanded="false" aria-controls="${id}" onclick="toggleMonth('${id}','${kind}','${title}')"><span class="month-toggle"><span class="month-arrow">▶</span><span class="item-title">${title}</span></span><span class="month-total">${rp(total)}</span></button><div class="day-list" id="${id}">${children}</div></section>`;
+ if(mode==='harian'){
+  const months=[...new Set(ks.map(k=>k.slice(0,7)))].sort().reverse();
+  $("menu").innerHTML=months.map(m=>{
+   const days=ks.filter(k=>k.startsWith(m)).sort().reverse();
+   const rev=allTx().filter(r=>dateOf(r).startsWith(m)&&active(r,r._jenis)).reduce((a,r)=>a+money(r),0);
+   const children=days.map(k=>{const st=periodStats(k);return `<button class="item day-row" type="button" onclick="lihat('${k}')"><span class="item-left"><span class="item-title">📅 ${esc(label(k))}</span><span class="item-sub">${st.tx.length} transaksi • Pengeluaran ${rp(st.exp)}</span></span><span class="month-total">${rp(st.rev)}</span></button>`}).join('');
+   return row('period-'+m.replace(/[^0-9]/g,''),fmtMonth(m),rev,children,m);
+  }).join(''); return;
+ }
+ if(mode==='bulanan'){
+  const years=[...new Set(ks.map(k=>k.slice(0,4)))].sort().reverse();
+  $("menu").innerHTML=years.map(y=>{
+   const months=[...new Set(ks.filter(k=>k.startsWith(y)).map(k=>k.slice(0,7)))].sort().reverse();
+   const rev=allTx().filter(r=>dateOf(r).startsWith(y)&&active(r,r._jenis)).reduce((a,r)=>a+money(r),0);
+   const children=months.map(m=>{const st=periodStats(m);return `<button class="item day-row" type="button" onclick="lihat('${m}')"><span class="item-left"><span class="item-title">📆 ${fmtMonth(m)}</span><span class="item-sub">${st.tx.length} transaksi • Pengeluaran ${rp(st.exp)}</span></span><span class="month-total">${rp(st.rev)}</span></button>`}).join('');
+   return row('year-months-'+y,'Tahun '+y,rev,children,y);
+  }).join(''); return;
+ }
+ const years=[...new Set(ks.map(k=>k.slice(0,4)))].sort().reverse();
+ $("menu").innerHTML=years.map(y=>{
+  const months=[...new Set(ks.filter(k=>k.startsWith(y)).map(k=>k.slice(0,7)))].sort().reverse();
+  const rev=allTx().filter(r=>dateOf(r).startsWith(y)&&active(r,r._jenis)).reduce((a,r)=>a+money(r),0);
+  const children=months.map(m=>{const st=periodStats(m);return `<button class="item day-row" type="button" onclick="lihat('${m}')"><span class="item-left"><span class="item-title">📆 ${fmtMonth(m)}</span><span class="item-sub">${st.tx.length} transaksi • Pengeluaran ${rp(st.exp)}</span></span><span class="month-total">${rp(st.rev)}</span></button>`}).join('');
+  return row('year-detail-'+y,'Tahun '+y,rev,children,y);
+ }).join('');
+}
+function toggleMonth(id,kind,title){const box=$(id),btn=document.querySelector(`[aria-controls="${id}"]`);const open=!box.classList.contains('open');box.classList.toggle('open',open);if(btn)btn.setAttribute('aria-expanded',String(open));if(open){const first=keys().filter(k=>k.startsWith(kind)).sort().reverse()[0];if(first)lihat(mode==='harian'?first:first.slice(0,7))}}window.toggleMonth=toggleMonth;
+function setMode(m){mode=m;document.querySelectorAll("[id^=tab-]").forEach(x=>x.classList.remove("active"));$("tab-"+m).classList.add("active");renderList();chooseDefault()}window.setMode=setMode;
+function chooseDefault(){const ks=keys();if(ks.length)lihat(ks[0]);else clearDetail()}
+function clearDetail(){$("detailTitle").textContent="-";$("detailCount").textContent="";["kpKonter","kpTotal","kpPeng","kpLaba"].forEach(id=>$(id).textContent="Rp 0");$("tbody").innerHTML='<tr><td colspan="7" class="empty">Belum ada transaksi.</td></tr>'}
+function lihat(k){
+ const tx=allTx().filter(r=>belongs(r,k)).sort((a,b)=>dateOf(b).localeCompare(dateOf(a)));
+ const pg=pengeluaran.filter(r=>belongs(r,k)).sort((a,b)=>dateOf(b).localeCompare(dateOf(a)));
+ const rev=tx.filter(r=>active(r,r._jenis)).reduce((a,r)=>a+money(r),0),exp=pg.reduce((a,r)=>a+expenseOf(r),0);
+ const rows=[
+  ...tx.map(r=>({date:dateOf(r),kind:r._jenis,worker:worker(r),customer:customer(r),product:product(r),status:status(r),amount:money(r),income:true,active:active(r,r._jenis)})),
+  ...pg.map(r=>({date:dateOf(r),kind:'Pengeluaran',worker:worker(r),customer:r.keterangan||r.deskripsi||r.catatan||'-',product:r.keterangan||r.deskripsi||r.catatan||r.jenis||'-',status:r.jenis||r.kategori||'Lain Lain',amount:expenseOf(r),income:false,active:false}))
+ ].sort((a,b)=>b.date.localeCompare(a.date)||Number(b.income)-Number(a.income));
+ $("detailTitle").textContent=label(k);$("detailCount").textContent=`${tx.length} transaksi • ${pg.length} pengeluaran`;
+ $("kpKonter").textContent=rp(rev);$("kpTotal").textContent=rp(rev);$("kpPeng").textContent=rp(exp);$("kpLaba").textContent=rp(rev-exp);
+ $("tbody").innerHTML=rows.map(r=>`<tr><td>${esc(r.date)}</td><td><b>${esc(r.kind)}</b></td><td>${esc(r.worker)}</td><td>${esc(r.customer)}</td><td>${esc(r.product)}</td><td>${r.income?`${esc(r.status)} ${r.active?'<span class="badge green">Dihitung</span>':'<span class="badge red">Tidak dihitung</span>'}`:`<span class="badge red">${esc(r.status)}</span>`}</td><td class="num" style="color:${r.income?'#16a34a':'#dc2626'}">${r.income?'':'− '}${rp(r.amount)}</td></tr>`).join("")||'<tr><td colspan="7" class="empty">Tidak ada transaksi pada periode ini.</td></tr>'
+}window.lihat=lihat;
+onAuthStateChanged(auth,async u=>{if(u){uid=u.uid;await muatSemua()}else{uid="";ownerUid="";$("status").textContent="⚠️ Sesi login belum terbaca. Buka halaman melalui login FIXZY.";clearDetail()}});
+</script>
+<script>function toggleDarkMode(){document.body.classList.toggle("dark-mode");localStorage.setItem("fixzy-dark-mode",document.body.classList.contains("dark-mode")?"1":"0")}if(localStorage.getItem("fixzy-dark-mode")==="1")document.body.classList.add("dark-mode");</script>
+</body></html>
